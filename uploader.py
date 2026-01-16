@@ -4,7 +4,7 @@ import os
 import shutil
 
 # ========== CONFIG ==========
-REPO_PATH = r"C:\path\to\your\repo"   # local clone of your repo
+REPO_PATH = r"C:\Users\dhiraj.kumar\Downloads\YtG"
 UPLOAD_FOLDER = "videos"
 # ===========================
 
@@ -17,7 +17,8 @@ def download_to_temp(url):
 
     cmd = [
         "yt-dlp",
-        "-f", "mp4",
+        "-f", "bv*+ba/b",
+        "--merge-output-format", "mp4",
         "-o", output_path,
         url
     ]
@@ -44,8 +45,7 @@ def move_to_repo(temp_dir):
 def git_lfs_upload(file_path):
     os.chdir(REPO_PATH)
 
-    print("Tracking with Git LFS...")
-    subprocess.run(["git", "lfs", "track", "*.mp4"], check=True)
+    print("Uploading via Git LFS...")
 
     subprocess.run(["git", "add", ".gitattributes"], check=True)
     subprocess.run(["git", "add", file_path], check=True)
