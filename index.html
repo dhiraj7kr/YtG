@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GitTube</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: white;
+}
+
+.header {
+  background: #181818;
+  padding: 15px 20px;
+  font-size: 22px;
+  font-weight: bold;
+  color: red;
+}
+
+.container {
+  display: flex;
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+  gap: 20px;
+}
+
+.player-section {
+  flex: 3;
+}
+
+.sidebar {
+  flex: 1;
+}
+
+video {
+  width: 100%;
+  background: black;
+  border-radius: 10px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
+.channel {
+  color: #aaa;
+  margin-top: 5px;
+}
+
+.video-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.video-item:hover {
+  background: #2a2a2a;
+}
+
+.thumb {
+  width: 120px;
+  height: 70px;
+  background: #333;
+  border-radius: 6px;
+}
+
+.video-meta {
+  font-size: 14px;
+}
+
+@media(max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">GitTube</div>
+
+<div class="container">
+
+  <div class="player-section">
+    <video id="video" controls>
+      <source id="videoSource" src="" type="video/mp4">
+    </video>
+
+    <div class="title" id="title"></div>
+    <div class="channel" id="channel">GitTube Academy</div>
+  </div>
+
+  <div class="sidebar" id="playlist"></div>
+
+</div>
+
+<script>
+const videos = [
+  {
+    title: "How to install Flutter on Windows 2025 | Setup Android Studio Step by Step",
+    src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/How_to_install_Flutter_on_Windows_2025_Setup_Android_Studio_for_Flutter_Step_by_Step_1080p.mp4"
+  },
+  {
+    title: "Flutter Tutorial For Beginners In 1 Hour (1080P)",
+    src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/Flutter_Tutorial_For_Beginners_In_1_Hour_1080P.mp4"
+  }
+];
+
+const video = document.getElementById("video");
+const source = document.getElementById("videoSource");
+const title = document.getElementById("title");
+const playlist = document.getElementById("playlist");
+
+function loadVideo(index) {
+  source.src = videos[index].src;
+  title.innerText = videos[index].title;
+  video.load();
+  video.play();
+}
+
+videos.forEach((vid, index) => {
+  const div = document.createElement("div");
+  div.className = "video-item";
+  div.innerHTML = `
+    <div class="thumb"></div>
+    <div class="video-meta">${vid.title}</div>
+  `;
+  div.onclick = () => loadVideo(index);
+  playlist.appendChild(div);
+});
+
+loadVideo(0);
+</script>
+
+</body>
+</html>
