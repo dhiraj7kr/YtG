@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>GitTube - Developer Video Repository</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
@@ -13,17 +13,17 @@
 
 <header class="header">
     <div class="brand" onclick="goHome()" style="cursor: pointer;">
-        <svg height="32" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true" fill="#fff"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
+        <svg height="28" viewBox="0 0 16 16" width="28" fill="#fff"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
         <div class="brand-logo">GitTube</div>
     </div>
     
     <div class="search-container">
-        <input type="text" id="searchInput" class="search-bar" placeholder="Search repositories (Ctrl + /)" autocomplete="off">
+        <input type="text" id="searchInput" class="search-bar" placeholder="Search..." autocomplete="off">
         <div id="searchResults" class="search-dropdown"></div>
     </div>
 
-    <div style="display:flex; gap:15px; align-items:center;">
-        <button class="btn" style="padding:6px 10px;">Login</button>
+    <div class="header-actions">
+        <button class="btn login-btn" style="padding:6px 10px;">Login</button>
     </div>
 </header>
 
@@ -55,26 +55,29 @@
 
                 <div class="controls-row">
                     <div class="left-controls">
-                        <button class="control-btn" id="playPauseBtn">
+                        <button class="control-btn" id="playPauseBtn" title="Play/Pause (Space)">
                             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         </button>
                         
-                        <button class="control-btn" onclick="skipVideo(-10)" title="-10s">
-                            <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" transform="rotate(180 12 12)"/></svg>
+                        <button class="control-btn" onclick="skipVideo(-10)" title="Rewind 10s">
+                             <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" transform="rotate(180 12 12)"/></svg>
+                             <span class="btn-text-overlay">10</span>
                         </button>
-                        <button class="control-btn" onclick="skipVideo(10)" title="+10s">
-                            <svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+                        
+                        <button class="control-btn" onclick="skipVideo(10)" title="Forward 10s">
+                             <svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+                             <span class="btn-text-overlay">10</span>
                         </button>
-
+                        
                         <button class="control-btn" onclick="nextVideo()" title="Next Video">
-                            <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                             <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                         </button>
 
                         <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
                     </div>
 
                     <div class="right-controls">
-                        <button class="control-btn" title="Fullscreen (F)" onclick="toggleFullscreen()">
+                        <button class="control-btn" onclick="toggleFullscreen()" title="Fullscreen (F)">
                             <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
                         </button>
                     </div>
@@ -89,12 +92,11 @@
                     <img src="https://github.com/github.png" class="avatar" alt="Channel Avatar">
                     <div>
                         <div class="channel-name">GitTube Academy</div>
-                        <div class="sub-count" id="viewCount">1.2M subscribers</div>
+                        <div class="sub-count" id="viewCount">...</div>
                     </div>
-                    <button class="btn follow-btn" id="followBtn" onclick="toggleFollow()">Follow</button>
                 </div>
 
-                <div style="display:flex; gap:10px;">
+                <div class="mobile-actions-row">
                     <button class="btn star-btn" id="starBtn" onclick="toggleStar()">
                         <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg>
                         <span id="starText">Star</span>
@@ -105,18 +107,15 @@
                         <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"></path></svg>
                         <span id="shareText">Share</span>
                     </button>
-                    
-                    <button class="btn">
-                        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M2 7.75A.75.75 0 0 1 2.75 7h10.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 7.75Z"></path><path d="M2.75 3a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5H2.75ZM2 12.75a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z"></path></svg>
-                        Playlist
-                    </button>
                 </div>
             </div>
         </div>
+        
+        <div class="mobile-playlist-header">Up Next</div>
     </main>
 
     <aside class="sidebar">
-        <div class="sidebar-header">
+        <div class="sidebar-header desktop-only">
             <span>REPOSITORY FILES</span>
         </div>
         <div id="playlistContainer"></div>
