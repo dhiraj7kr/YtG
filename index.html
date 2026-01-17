@@ -2,146 +2,492 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>GitTube</title>
+<title>GitTube - The Repository of Video</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+:root {
+  /* GitHub Dark Dimmed Palette */
+  --bg-canvas: #22272e;
+  --bg-canvas-subtle: #1c2128;
+  --bg-border: #444c56;
+  --text-main: #adbac7;
+  --text-secondary: #768390;
+  --accent-primary: #539bf5; /* GitHub Blue */
+  --accent-danger: #e5534b;
+  --btn-bg: #373e47;
+  --btn-hover: #444c56;
+  --header-bg: #2d333b;
+  
+  /* Layout */
+  --header-height: 64px;
+  --sidebar-width: 350px;
+}
+
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f0f0f;
-  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background-color: var(--bg-canvas);
+  color: var(--text-main);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
+/* --- Header --- */
 .header {
-  background: #181818;
-  padding: 15px 20px;
-  font-size: 22px;
-  font-weight: bold;
-  color: red;
+  height: var(--header-height);
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--bg-border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 10;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.brand-icon {
+  background: var(--accent-danger);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.search-bar {
+  background: var(--bg-canvas-subtle);
+  border: 1px solid var(--bg-border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  width: 40%;
+  color: var(--text-main);
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.user-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  border: 1px solid var(--bg-border);
+}
+
+/* --- Main Layout --- */
 .container {
   display: flex;
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
-  gap: 20px;
-}
-
-.player-section {
-  flex: 3;
-}
-
-.sidebar {
   flex: 1;
+  overflow: hidden; /* Prevent body scroll */
 }
 
-video {
+/* --- Player Section --- */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-stage {
   width: 100%;
-  background: black;
-  border-radius: 10px;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 6px;
+  border: 1px solid var(--bg-border);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.title {
+/* We stack all videos here, hidden ones display:none */
+.video-instance {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: none; /* Hidden by default */
+}
+
+.video-instance.active {
+  display: block;
+}
+
+.video-info {
+  margin-top: 16px;
+  border-bottom: 1px solid var(--bg-border);
+  padding-bottom: 16px;
+}
+
+.video-title {
   font-size: 20px;
-  font-weight: bold;
-  margin-top: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
 }
 
-.channel {
-  color: #aaa;
-  margin-top: 5px;
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.channel-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.channel-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-border);
+}
+
+.channel-text h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #fff;
+}
+.channel-text span {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* GitTube Action Buttons */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  background: var(--btn-bg);
+  border: 1px solid var(--bg-border);
+  color: var(--text-main);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+
+.btn:hover {
+  background: var(--btn-hover);
+  border-color: var(--text-secondary);
+}
+
+.btn.primary {
+  background: var(--bg-canvas); /* Github star button style */
+  color: var(--text-main);
+  border-color: var(--bg-border);
+}
+
+/* --- Sidebar / Playlist --- */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-canvas-subtle);
+  border-left: 1px solid var(--bg-border);
+  overflow-y: auto;
+  padding: 16px;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-main);
+  display: flex;
+  justify-content: space-between;
 }
 
 .video-item {
   display: flex;
   gap: 10px;
-  padding: 10px;
-  background: #1a1a1a;
-  border-radius: 8px;
   cursor: pointer;
-  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  margin-bottom: 8px;
 }
 
 .video-item:hover {
-  background: #2a2a2a;
+  background: var(--bg-canvas);
+}
+
+.video-item.playing {
+  background: rgba(83, 155, 245, 0.15); /* Blue tint */
+  border: 1px solid rgba(83, 155, 245, 0.4);
+}
+
+.thumb-wrapper {
+  position: relative;
+  width: 120px;
+  height: 68px;
+  flex-shrink: 0;
 }
 
 .thumb {
-  width: 120px;
-  height: 70px;
-  background: #333;
-  border-radius: 6px;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 4px;
+  border: 1px solid var(--bg-border);
+  object-fit: cover;
 }
 
-.video-meta {
-  font-size: 14px;
+.duration {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.item-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-channel {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Loading State for Thumbnails */
+.loading-pulse {
+  animation: pulse 1.5s infinite ease-in-out;
+  background-color: var(--btn-bg);
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 
 @media(max-width: 900px) {
-  .container {
-    flex-direction: column;
-  }
+  .container { flex-direction: column; overflow-y: auto; }
+  .sidebar { width: 100%; height: auto; border-left: none; border-top: 1px solid var(--bg-border); }
+  .main-content { overflow: visible; }
+  body { overflow: auto; }
 }
 </style>
 </head>
-
 <body>
 
-<div class="header">GitTube</div>
+<header class="header">
+  <div class="brand">
+    <div class="brand-icon">GIT</div>
+    GitTube
+  </div>
+  <input type="text" class="search-bar" placeholder="Type / to search repositories...">
+  <div class="user-actions">
+    <div style="font-size: 20px; color: var(--text-secondary);">🔔</div>
+    <div class="avatar"></div>
+  </div>
+</header>
 
 <div class="container">
+  
+  <main class="main-content">
+    <div id="videoStage" class="video-stage">
+      </div>
 
-  <div class="player-section">
-    <video id="video" controls>
-      <source id="videoSource" src="" type="video/mp4">
-    </video>
+    <div class="video-info">
+      <div id="mainTitle" class="video-title">Loading Repository...</div>
+      
+      <div class="meta-row">
+        <div class="channel-info">
+          <div class="channel-avatar"></div>
+          <div class="channel-text">
+            <h4>GitTube Academy</h4>
+            <span id="viewCount">1.2k views • Updated yesterday</span>
+          </div>
+        </div>
 
-    <div class="title" id="title"></div>
-    <div class="channel" id="channel">GitTube Academy</div>
-  </div>
+        <div class="actions">
+          <button class="btn primary">
+             ★ Star <span style="background:rgba(255,255,255,0.1); padding:0 4px; border-radius:4px; margin-left:4px">12k</span>
+          </button>
+          <button class="btn">⑂ Fork</button>
+          <button class="btn">⊞ Project</button>
+          <button class="btn">⋯</button>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-top:20px; background:var(--bg-canvas-subtle); padding:16px; border:1px solid var(--bg-border); border-radius:6px;">
+      <h5 style="margin:0 0 10px 0; color:var(--text-main)">README.md</h5>
+      <p style="font-size:14px; color:var(--text-secondary); line-height:1.6;">
+        In this tutorial repository, we cover the essentials of the topic shown above. 
+        Please make sure to clone the repo and follow along. Dependencies are listed in the `package.json`.
+      </p>
+    </div>
+  </main>
 
-  <div class="sidebar" id="playlist"></div>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span>FILES (PLAYLIST)</span>
+      <span>3 items</span>
+    </div>
+    <div id="playlistContainer"></div>
+  </aside>
 
 </div>
 
 <script>
+// Data Source
 const videos = [
   {
-    title: "How to install Flutter on Windows 2025 | Setup Android Studio Step by Step",
-    src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/How_to_install_Flutter_on_Windows_2025_Setup_Android_Studio_for_Flutter_Step_by_Step_1080p.mp4"
+    id: 'v0',
+    title: "How to install Flutter on Windows 2025 | Setup Android Studio",
+    src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/How_to_install_Flutter_on_Windows_2025_Setup_Android_Studio_for_Flutter_Step_by_Step_1080p.mp4",
+    duration: "12:45",
+    views: "15,340"
   },
   {
+    id: 'v1',
     title: "Flutter Tutorial For Beginners In 1 Hour (1080P)",
-    src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/Flutter_Tutorial_For_Beginners_In_1_Hour_1080P.mp4"
+    src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/Flutter_Tutorial_For_Beginners_In_1_Hour_1080P.mp4",
+    duration: "1:02:10",
+    views: "892,100"
+  },
+  {
+    id: 'v2',
+    title: "Discrete Mathematics 01 | Graph Theory - Basics of Graphs",
+    src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/Discrete_Mathematics_01_Graph_Theory_-_Basics_of_Graphs_CS_IT_GATE_2024_Series_YT_720P.mp4",
+    duration: "45:20",
+    views: "5,100"
   }
 ];
 
-const video = document.getElementById("video");
-const source = document.getElementById("videoSource");
-const title = document.getElementById("title");
-const playlist = document.getElementById("playlist");
+const videoStage = document.getElementById('videoStage');
+const playlistContainer = document.getElementById('playlistContainer');
+const mainTitle = document.getElementById('mainTitle');
+const viewCount = document.getElementById('viewCount');
 
-function loadVideo(index) {
-  source.src = videos[index].src;
-  title.innerText = videos[index].title;
-  video.load();
-  video.play();
+let currentIndex = 0;
+
+/* STRATEGY: MULTI-ELEMENT PRELOADING
+   To ensure all videos are preloaded to run immediately, we create 
+   a specific <video> tag for EACH item in the DOM hiddenly.
+   This consumes bandwidth but guarantees instant switching.
+*/
+
+function initSystem() {
+  videos.forEach((vid, index) => {
+    // 1. Create the Video Player Element
+    const videoEl = document.createElement('video');
+    videoEl.id = `vid-${index}`;
+    videoEl.className = 'video-instance';
+    videoEl.src = vid.src;
+    videoEl.controls = true;
+    // CRITICAL: This tells browser to buffer the whole thing
+    videoEl.preload = 'auto'; 
+    videoStage.appendChild(videoEl);
+
+    // 2. Create the Sidebar Item
+    const item = document.createElement('div');
+    item.className = 'video-item';
+    item.id = `item-${index}`;
+    item.innerHTML = `
+      <div class="thumb-wrapper">
+         <div class="thumb" style="background: linear-gradient(135deg, #1f2428 0%, #2d333b 100%); display:flex; align-items:center; justify-content:center; color:#555;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+         </div>
+         <div class="duration">${vid.duration}</div>
+      </div>
+      <div class="item-meta">
+        <div class="item-title">${vid.title}</div>
+        <div class="item-channel">GitTube Academy</div>
+      </div>
+    `;
+    
+    item.onclick = () => switchVideo(index);
+    playlistContainer.appendChild(item);
+  });
+
+  // Start the first one
+  switchVideo(0);
 }
 
-videos.forEach((vid, index) => {
-  const div = document.createElement("div");
-  div.className = "video-item";
-  div.innerHTML = `
-    <div class="thumb"></div>
-    <div class="video-meta">${vid.title}</div>
-  `;
-  div.onclick = () => loadVideo(index);
-  playlist.appendChild(div);
-});
+function switchVideo(index) {
+  // 1. Pause all videos
+  const allVideos = document.querySelectorAll('.video-instance');
+  allVideos.forEach(v => {
+    v.pause();
+    v.classList.remove('active');
+  });
 
-loadVideo(0);
+  // 2. Play the selected video
+  const activeVideo = document.getElementById(`vid-${index}`);
+  if(activeVideo) {
+    activeVideo.classList.add('active');
+    activeVideo.play().catch(e => console.log("Auto-play prevented by browser policy until interaction"));
+    currentIndex = index;
+  }
+
+  // 3. Update Text Info
+  mainTitle.innerText = videos[index].title;
+  viewCount.innerText = `${videos[index].views} views • Updated recently`;
+
+  // 4. Update Sidebar UI
+  const allItems = document.querySelectorAll('.video-item');
+  allItems.forEach(item => item.classList.remove('playing'));
+  document.getElementById(`item-${index}`).classList.add('playing');
+}
+
+// Initialize on Load
+window.addEventListener('DOMContentLoaded', initSystem);
+
 </script>
 
 </body>
