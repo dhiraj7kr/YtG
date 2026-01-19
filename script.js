@@ -32,7 +32,10 @@ let state = {
     isPlaying: false,
     isStarred: false,
     volume: 1.0,
-    isDragging: false
+    isDragging: false,
+    captionsOn: false,
+    playbackRate: 1.0,
+    quality: '1080p'
 };
 
 // --- DOM Elements ---
@@ -58,7 +61,14 @@ const els = {
     starCount: document.getElementById('starCount'),
     starText: document.getElementById('starText'),
     searchInput: document.getElementById('searchInput'),
-    searchResults: document.getElementById('searchResults')
+    searchResults: document.getElementById('searchResults'),
+    captionBtn: document.getElementById('captionBtn'),
+    settingsMenu: document.getElementById('settingsMenu'),
+    menuMain: document.getElementById('menuMain'),
+    menuSpeed: document.getElementById('menuSpeed'),
+    menuQuality: document.getElementById('menuQuality'),
+    dispSpeed: document.getElementById('dispSpeed'),
+    dispQuality: document.getElementById('dispQuality')
 };
 
 let activeVideoEl = null;
@@ -69,7 +79,6 @@ function init() {
     renderPlaylist();
     setupGlobalEvents();
     
-    // Check URL for video
     const params = new URLSearchParams(window.location.search);
     const vidId = params.get('v');
     if (vidId) {
@@ -113,13 +122,18 @@ function renderPlaylist() {
 
 // --- Player Logic ---
 function loadVideo(index, pushHistory = true) {
-    // Teardown previous
     if (activeVideoEl) {
         activeVideoEl.pause();
         activeVideoEl.remove();
     }
 
     state.currentIndex = index;
+    // Reset video state
+    state.captionsOn = false;
+    state.playbackRate = 1.0;
+    els.dispSpeed.innerText = "Normal";
+    updateCaptionBtn();
+
     const vidData = videos[index];
 
     // UI Updates
@@ -129,7 +143,6 @@ function loadVideo(index, pushHistory = true) {
     els.viewCount.innerText = `${vidData.views} subscribers`;
     els.videoDate.innerText = `Published ${vidData.date}`;
     
-    // Highlight Playlist
     document.querySelectorAll('.playlist-item').forEach(el => el.classList.remove('active'));
     document.getElementById(`pl-item-${index}`)?.classList.add('active');
 
@@ -139,13 +152,20 @@ function loadVideo(index, pushHistory = true) {
     activeVideoEl.src = vidData.src;
     activeVideoEl.volume = state.volume;
     
+    // Add dummy track for captions demo
+    const track = document.createElement('track');
+    track.kind = 'captions';
+    track.label = 'English';
+    track.srclang = 'en';
+    track.src = ''; // Needs a .vtt file for real captions
+    activeVideoEl.appendChild(track);
+    
     // Events
     activeVideoEl.addEventListener('timeupdate', updateProgress);
     activeVideoEl.addEventListener('ended', () => { state.isPlaying = false; updatePlayIcons(); });
     activeVideoEl.addEventListener('click', togglePlay);
     activeVideoEl.addEventListener('loadedmetadata', () => {
         updateTimeDisplay();
-        // Auto-play
         togglePlay();
     });
 
@@ -184,11 +204,11 @@ function updatePlayIcons() {
     if (state.isPlaying) {
         wrapper.classList.remove('paused');
         wrapper.classList.add('playing');
-        btnPath.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); // Pause Icon
+        btnPath.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); 
     } else {
         wrapper.classList.remove('playing');
         wrapper.classList.add('paused');
-        btnPath.setAttribute('d', 'M8 5v14l11-7z'); // Play Icon
+        btnPath.setAttribute('d', 'M8 5v14l11-7z'); 
     }
 }
 
@@ -217,6 +237,70 @@ function scrub(e) {
     els.scrubHead.style.left = `${clamped * 100}%`;
 }
 
+// --- Captions & Settings ---
+function toggleCaptions() {
+    state.captionsOn = !state.captionsOn;
+    updateCaptionBtn();
+    
+    // Toggle actual track if available
+    if(activeVideoEl && activeVideoEl.textTracks[0]) {
+        activeVideoEl.textTracks[0].mode = state.captionsOn ? 'showing' : 'hidden';
+    } else {
+        if(state.captionsOn) console.log("Captions enabled (No VTT source provided for demo)");
+    }
+}
+
+function updateCaptionBtn() {
+    if (state.captionsOn) els.captionBtn.classList.add('active');
+    else els.captionBtn.classList.remove('active');
+}
+
+function toggleSettingsMenu() {
+    els.settingsMenu.classList.toggle('hidden');
+    // Reset to main menu
+    closeSubmenu();
+}
+
+function openSubmenu(menu) {
+    els.menuMain.classList.add('hidden');
+    if (menu === 'speed') els.menuSpeed.classList.remove('hidden');
+    if (menu === 'quality') els.menuQuality.classList.remove('hidden');
+}
+
+function closeSubmenu() {
+    els.menuMain.classList.remove('hidden');
+    els.menuSpeed.classList.add('hidden');
+    els.menuQuality.classList.add('hidden');
+}
+
+function changeSpeed(rate) {
+    if (!activeVideoEl) return;
+    state.playbackRate = rate;
+    activeVideoEl.playbackRate = rate;
+    
+    // Update Text
+    const text = rate === 1.0 ? "Normal" : rate + "x";
+    els.dispSpeed.innerText = text;
+    
+    // Toggle active checkmarks (visual)
+    // Note: In a production app, you'd dynamically render the checkmarks based on state
+    
+    closeSubmenu();
+    toggleSettingsMenu(); // Close entire menu
+}
+
+function changeQuality(quality) {
+    // Since these are single MP4 files, we can't actually change the bitrate without DASH/HLS
+    // This simulates the UI interaction
+    state.quality = quality;
+    els.dispQuality.innerText = quality;
+    
+    console.log(`Quality preference set to: ${quality}`);
+    
+    closeSubmenu();
+    toggleSettingsMenu();
+}
+
 // --- Utilities ---
 function formatTime(s) {
     const min = Math.floor(s / 60);
@@ -225,11 +309,10 @@ function formatTime(s) {
 }
 
 function previewPlay(card, index) {
-    // Only preview if not on mobile (simple check)
     if(window.innerWidth > 900) {
         const vid = card.querySelector('video');
         vid.currentTime = 0;
-        vid.play().catch(e => {}); // Ignore auto-play errors
+        vid.play().catch(e => {}); 
     }
 }
 
@@ -239,26 +322,24 @@ function previewStop(card) {
     vid.currentTime = 0;
 }
 
-// --- Event Listeners Setup ---
+// --- Global Events ---
 function setupGlobalEvents() {
-    // Keyboard
     document.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT') return;
         const key = e.key.toLowerCase();
         if (key === ' ' && state.currentIndex !== -1) { e.preventDefault(); togglePlay(); }
         if (key === 'f') toggleFullscreen();
         if (key === 'm') toggleMute();
+        if (key === 'c') toggleCaptions();
         if (key === '/') { e.preventDefault(); els.searchInput.focus(); }
     });
 
-    // Progress Bar Interaction
     els.progressBar.addEventListener('mousedown', (e) => {
         state.isDragging = true;
         scrub(e);
     });
     document.addEventListener('mousemove', (e) => {
         if (state.isDragging) scrub(e);
-        // Hover effect for progress bar
         if (e.target.closest('.progress-area')) {
             const rect = els.progressBar.getBoundingClientRect();
             const pos = (e.clientX - rect.left) / rect.width;
@@ -267,24 +348,27 @@ function setupGlobalEvents() {
     });
     document.addEventListener('mouseup', () => { state.isDragging = false; });
 
-    // Buttons
     els.playPauseBtn.onclick = togglePlay;
     els.bigPlayBtn.onclick = togglePlay;
     
-    // Volume
     els.volumeSlider.addEventListener('input', (e) => {
         state.volume = e.target.value;
         if(activeVideoEl) activeVideoEl.volume = state.volume;
     });
     els.muteBtn.onclick = toggleMute;
     
-    // Search
     els.searchInput.addEventListener('input', handleSearch);
+    
+    // Close menus when clicking outside
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.search-wrapper')) els.searchResults.style.display = 'none';
+        
+        // Close Settings if clicked outside of menu or toggle button
+        if (!e.target.closest('#settingsMenu') && !e.target.closest('#settingsBtn')) {
+            els.settingsMenu.classList.add('hidden');
+        }
     });
 
-    // History Back
     window.onpopstate = (e) => {
         if (e.state && e.state.v) {
             const idx = videos.findIndex(v => v.id === e.state.v);
@@ -306,7 +390,6 @@ function toggleFullscreen() {
 function toggleMute() {
     if (!activeVideoEl) return;
     activeVideoEl.muted = !activeVideoEl.muted;
-    // Update icon logic here (simplified)
     const path = els.muteBtn.querySelector('path');
     if(activeVideoEl.muted) path.setAttribute('d', 'M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z');
     else path.setAttribute('d', 'M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z');
@@ -363,5 +446,4 @@ function handleSearch(e) {
     }
 }
 
-// Start
 document.addEventListener('DOMContentLoaded', init);
