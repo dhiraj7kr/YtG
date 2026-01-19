@@ -2,125 +2,147 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GitTube - Developer Video Repository</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitTube | Developer Video Repository</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="header">
-    <div class="brand" onclick="goHome()" style="cursor: pointer;">
-        <svg height="28" viewBox="0 0 16 16" width="28" fill="#fff"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
-        <div class="brand-logo">GitTube</div>
+    <div class="header-left">
+        <a href="#" class="brand" onclick="goHome()">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02a9.68 9.68 0 0 1 2.5-.34c.848.004 1.708.115 2.5.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+            </div>
+            <span class="brand-text">GitTube</span>
+        </a>
     </div>
-    
-    <div class="search-container">
-        <input type="text" id="searchInput" class="search-bar" placeholder="Search..." autocomplete="off">
+
+    <div class="search-wrapper">
+        <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 16 16" width="16" height="16"><path d="M10.68 11.74a6 6 0 0 1-7.922-8.98 6 6 0 0 1 8.98 7.92l3.19 3.19a.75.75 0 0 1-1.06 1.06l-3.19-3.19ZM10.5 6a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"></path></svg>
+            <input type="text" id="searchInput" placeholder="Search repository..." autocomplete="off">
+            <div class="kbd-shortcut">/</div>
+        </div>
         <div id="searchResults" class="search-dropdown"></div>
     </div>
 
-    <div class="header-actions">
-        <button class="btn login-btn" style="padding:6px 10px;">Login</button>
+    <div class="header-right">
+        <button class="btn btn-secondary">
+             <svg viewBox="0 0 16 16" width="16" height="16"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7.25-3.25v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5a.75.75 0 0 1 1.5 0Z"></path></svg>
+             <span>Upload</span>
+        </button>
+        <button class="btn btn-primary">Sign In</button>
     </div>
 </header>
 
-<div id="homeView" class="home-container">
-    <div class="filter-bar">
-        <button class="filter-chip active">All</button>
-        <button class="filter-chip">Flutter</button>
-        <button class="filter-chip">Algorithms</button>
-        <button class="filter-chip">System Design</button>
-        <button class="filter-chip">Python</button>
-    </div>
-    <div id="videoGrid" class="video-grid">
-        </div>
-</div>
-
-<div id="playerView" class="container hidden">
+<div class="app-layout">
     
-    <main class="main-content">
-        <div class="player-wrapper" id="playerWrapper">
-            <div class="big-play-btn" id="bigPlayBtn">
-                <svg viewBox="0 0 24 24" fill="white" width="40" height="40"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-
-            <div class="controls-overlay" id="controlsOverlay">
-                <div class="progress-container" id="progressBar">
-                    <div class="progress-filled" id="progressFilled"></div>
-                    <div class="progress-thumb"></div>
-                </div>
-
-                <div class="controls-row">
-                    <div class="left-controls">
-                        <button class="control-btn" id="playPauseBtn" title="Play/Pause (Space)">
-                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        </button>
-                        
-                        <button class="control-btn" onclick="skipVideo(-10)" title="Rewind 10s">
-                             <svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" transform="rotate(180 12 12)"/></svg>
-                             <span class="btn-text-overlay">10</span>
-                        </button>
-                        
-                        <button class="control-btn" onclick="skipVideo(10)" title="Forward 10s">
-                             <svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
-                             <span class="btn-text-overlay">10</span>
-                        </button>
-                        
-                        <button class="control-btn" onclick="nextVideo()" title="Next Video">
-                             <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-                        </button>
-
-                        <span class="time-display" id="timeDisplay">0:00 / 0:00</span>
-                    </div>
-
-                    <div class="right-controls">
-                        <button class="control-btn" onclick="toggleFullscreen()" title="Fullscreen (F)">
-                            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="video-meta">
-            <h1 class="video-title" id="mainTitle">Loading...</h1>
-            <div class="action-bar">
-                <div class="channel-profile">
-                    <img src="https://github.com/github.png" class="avatar" alt="Channel Avatar">
-                    <div>
-                        <div class="channel-name">GitTube Academy</div>
-                        <div class="sub-count" id="viewCount">...</div>
-                    </div>
-                </div>
-
-                <div class="mobile-actions-row">
-                    <button class="btn star-btn" id="starBtn" onclick="toggleStar()">
-                        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg>
-                        <span id="starText">Star</span>
-                        <span class="count-badge" id="starCount">1,240</span>
-                    </button>
-                    
-                    <button class="btn" id="shareBtn" onclick="shareVideo()">
-                        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"></path></svg>
-                        <span id="shareText">Share</span>
-                    </button>
-                </div>
+    <main id="homeView" class="view-container">
+        <div class="filter-scroller">
+            <div class="filter-group">
+                <button class="chip active">All</button>
+                <button class="chip">Flutter</button>
+                <button class="chip">System Design</button>
+                <button class="chip">Python</button>
+                <button class="chip">DevOps</button>
+                <button class="chip">React</button>
             </div>
         </div>
         
-        <div class="mobile-playlist-header">Up Next</div>
+        <div id="videoGrid" class="video-grid">
+            </div>
     </main>
 
-    <aside class="sidebar">
-        <div class="sidebar-header desktop-only">
-            <span>REPOSITORY FILES</span>
-        </div>
-        <div id="playlistContainer"></div>
-    </aside>
+    <div id="playerView" class="view-container hidden player-layout">
+        <div class="main-column">
+            <div class="player-stage" id="playerWrapper">
+                <div class="play-overlay-btn" id="bigPlayBtn">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
 
+                <div class="controls-overlay" id="controlsOverlay">
+                    <div class="progress-area" id="progressBar">
+                        <div class="progress-bg"></div>
+                        <div class="progress-fill" id="progressFilled"></div>
+                        <div class="progress-hover" id="progressHover"></div>
+                        <div class="scrub-head"></div>
+                    </div>
+
+                    <div class="controls-toolbar">
+                        <div class="controls-left">
+                            <button class="icon-btn" id="playPauseBtn" title="Play (Space)">
+                                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </button>
+                            
+                            <div class="volume-container">
+                                <button class="icon-btn" id="muteBtn" title="Mute (M)">
+                                    <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                </button>
+                                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+                            </div>
+
+                            <span class="time-code" id="timeDisplay">0:00 / 0:00</span>
+                        </div>
+
+                        <div class="controls-right">
+                            <button class="icon-btn" title="Settings">
+                                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.58 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                            </button>
+                            <button class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen (F)">
+                                <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="video-info-block">
+                <h1 class="video-headline" id="mainTitle">Loading Title...</h1>
+                
+                <div class="meta-row">
+                    <div class="channel-group">
+                        <img src="https://github.com/github.png" class="channel-avatar" alt="User">
+                        <div class="channel-details">
+                            <span class="channel-id">GitTube Academy</span>
+                            <span class="sub-stats" id="viewCount">...</span>
+                        </div>
+                        <button class="btn btn-secondary btn-sm">Sponsor</button>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary action-btn" id="starBtn" onclick="toggleStar()">
+                            <svg class="star-icon" viewBox="0 0 16 16" width="16" height="16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"></path></svg>
+                            <span id="starText">Star</span>
+                            <span class="badge" id="starCount">1,240</span>
+                        </button>
+                        <button class="btn btn-secondary action-btn" onclick="shareVideo()">
+                            <svg viewBox="0 0 16 16" width="16" height="16"><path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"></path></svg>
+                            <span id="shareText">Share</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="description-box">
+                    <p class="desc-date" id="videoDate">Published recently</p>
+                    <p>Learn the latest techniques in this comprehensive tutorial. This repository contains all code samples used in the video.</p>
+                </div>
+            </div>
+        </div>
+
+        <aside class="sidebar-playlist">
+            <div class="sidebar-head">
+                <span>Repository Files (Playlist)</span>
+            </div>
+            <div id="playlistContainer" class="playlist-scroll">
+                </div>
+        </aside>
+    </div>
 </div>
 
 <script src="script.js"></script>

@@ -1,281 +1,367 @@
-// --- Data Source ---
+// --- Configuration & Data ---
 const videos = [
-  {
-    id: 'v0',
-    title: "How to install Flutter on Windows 2025 | Setup Android Studio",
-    src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/How_to_install_Flutter_on_Windows_2025_Setup_Android_Studio_for_Flutter_Step_by_Step_1080p.mp4",
-    duration: "12:45",
-    views: "15k",
-    date: "1 day ago"
-  },
-  {
-    id: 'v1',
-    title: "Flutter Tutorial For Beginners In 1 Hour (1080P)",
-    src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/Flutter_Tutorial_For_Beginners_In_1_Hour_1080P.mp4",
-    duration: "1:02:10",
-    views: "892k",
-    date: "1 year ago"
-  },
-  {
-    id: 'v2',
-    title: "Discrete Mathematics 01 | Graph Theory - Basics of Graphs",
-    src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/Discrete_Mathematics_01_Graph_Theory_-_Basics_of_Graphs_CS_IT_GATE_2024_Series_YT_720P.mp4",
-    duration: "45:20",
-    views: "5k",
-    date: "2 weeks ago"
-  }
+    {
+        id: 'v0',
+        title: "How to install Flutter on Windows 2025 | Setup Android Studio",
+        src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/How_to_install_Flutter_on_Windows_2025_Setup_Android_Studio_for_Flutter_Step_by_Step_1080p.mp4",
+        duration: "12:45",
+        views: "15k views",
+        date: "2 days ago"
+    },
+    {
+        id: 'v1',
+        title: "Flutter Tutorial For Beginners In 1 Hour (Crash Course)",
+        src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/Flutter_Tutorial_For_Beginners_In_1_Hour_1080P.mp4",
+        duration: "1:02:10",
+        views: "892k views",
+        date: "1 year ago"
+    },
+    {
+        id: 'v2',
+        title: "Discrete Mathematics 01 | Graph Theory - Basics of Graphs",
+        src: "https://media.githubusercontent.com/media/dhiraj7kr/YtG/main/Discrete_Mathematics_01_Graph_Theory_-_Basics_of_Graphs_CS_IT_GATE_2024_Series_YT_720P.mp4",
+        duration: "45:20",
+        views: "5k views",
+        date: "2 weeks ago"
+    }
 ];
 
-// --- Global Elements ---
-const homeView = document.getElementById('homeView');
-const playerView = document.getElementById('playerView');
-const videoGrid = document.getElementById('videoGrid');
-const playerWrapper = document.getElementById('playerWrapper');
-const playlistContainer = document.getElementById('playlistContainer');
-const playPauseBtn = document.getElementById('playPauseBtn');
-const progressBar = document.getElementById('progressBar');
-const progressFilled = document.getElementById('progressFilled');
-const timeDisplay = document.getElementById('timeDisplay');
-const starBtn = document.getElementById('starBtn');
-const starText = document.getElementById('starText');
-const searchInput = document.getElementById('searchInput');
-const searchResults = document.getElementById('searchResults');
-const shareText = document.getElementById('shareText');
-
-let currentIndex = 0;
-let isStarred = false;
-let isDragging = false;
-let inPlayerMode = false;
-
-// --- Initialization ---
-function initSystem() {
-  generateHomeGrid();
-
-  videos.forEach((vid, index) => {
-    // Player Video
-    const videoEl = document.createElement('video');
-    videoEl.id = `vid-${index}`;
-    videoEl.className = 'video-instance';
-    videoEl.src = vid.src;
-    videoEl.preload = 'auto';
-    videoEl.addEventListener('timeupdate', () => { if(index === currentIndex) updateProgress(); });
-    videoEl.addEventListener('click', togglePlay); 
-    videoEl.addEventListener('ended', nextVideo);
-    playerWrapper.prepend(videoEl);
-
-    // Playlist Item
-    const item = document.createElement('div');
-    item.className = 'playlist-item';
-    item.id = `item-${index}`;
-    item.innerHTML = `
-      <div class="thumb-wrapper">
-         <video class="thumb-video" src="${vid.src}#t=1.0" preload="metadata" muted></video>
-         <div class="duration-badge">${vid.duration}</div>
-      </div>
-      <div class="item-info">
-        <h4>${vid.title}</h4>
-        <span>GitTube Academy • ${vid.views}</span>
-      </div>
-    `;
-    item.onclick = () => switchToPlayer(index);
-    playlistContainer.appendChild(item);
-  });
-
-  // Controls
-  playPauseBtn.onclick = togglePlay;
-  progressBar.addEventListener('click', scrub);
-  progressBar.addEventListener('mousedown', () => isDragging = true);
-  document.addEventListener('mouseup', () => isDragging = false);
-  document.addEventListener('mousemove', (e) => { if(isDragging) scrub(e); });
-  searchInput.addEventListener('input', handleSearch);
-  
-  // URL Routing
-  const urlParams = new URLSearchParams(window.location.search);
-  const videoId = urlParams.get('v');
-  if (videoId) {
-    const foundIndex = videos.findIndex(v => v.id === videoId);
-    if (foundIndex !== -1) switchToPlayer(foundIndex, false);
-    else goHome(false);
-  } else {
-    goHome(false);
-  }
-}
-
-function generateHomeGrid() {
-  videoGrid.innerHTML = '';
-  videos.forEach((vid, index) => {
-    const card = document.createElement('div');
-    card.className = 'video-card';
-    card.onclick = () => switchToPlayer(index);
-    card.innerHTML = `
-      <div class="card-thumb">
-        <video class="card-video" src="${vid.src}#t=1.0" preload="metadata" muted></video>
-        <div class="card-duration">${vid.duration}</div>
-      </div>
-      <div class="card-meta">
-        <img src="https://github.com/github.png" class="card-avatar">
-        <div class="card-text">
-           <h3 class="card-title">${vid.title}</h3>
-           <span class="card-stats">GitTube Academy • ${vid.views} views</span>
-        </div>
-      </div>
-    `;
-    videoGrid.appendChild(card);
-  });
-}
-
-function goHome(pushHistory = true) {
-  inPlayerMode = false;
-  playerView.classList.add('hidden');
-  homeView.classList.remove('hidden');
-  const activeVid = getActiveVideo();
-  if (activeVid) activeVid.pause();
-  if (pushHistory) history.pushState(null, '', window.location.pathname);
-}
-
-function switchToPlayer(index, pushHistory = true) {
-  inPlayerMode = true;
-  homeView.classList.add('hidden');
-  playerView.classList.remove('hidden');
-
-  const oldVid = getActiveVideo();
-  if(oldVid) { oldVid.pause(); oldVid.classList.remove('active'); }
-
-  currentIndex = index;
-  const newVid = getActiveVideo();
-  newVid.classList.add('active');
-  newVid.play().catch(e => console.log("Autoplay blocked"));
-  
-  updatePlayIcon(true);
-  document.getElementById('mainTitle').innerText = videos[index].title;
-  document.getElementById('viewCount').innerText = `${videos[index].views} subscribers`;
-
-  document.querySelectorAll('.playlist-item').forEach(i => i.classList.remove('playing'));
-  document.getElementById(`item-${index}`).classList.add('playing');
-
-  if (pushHistory) {
-    const newUrl = `${window.location.pathname}?v=${videos[index].id}`;
-    history.pushState({v: videos[index].id}, '', newUrl);
-  }
-}
-
-document.addEventListener('keydown', (e) => {
-  if (document.activeElement === searchInput || !inPlayerMode) return;
-  const key = e.key.toLowerCase();
-  if (key === 'f') toggleFullscreen();
-  else if (key === ' ') { e.preventDefault(); togglePlay(); }
-});
-
-function getActiveVideo() { return document.getElementById(`vid-${currentIndex}`); }
-
-window.onpopstate = function(event) {
-    if (event.state && event.state.v) {
-        const idx = videos.findIndex(v => v.id === event.state.v);
-        if (idx !== -1) switchToPlayer(idx, false);
-    } else { goHome(false); }
+// --- State ---
+let state = {
+    currentIndex: -1,
+    isPlaying: false,
+    isStarred: false,
+    volume: 1.0,
+    isDragging: false
 };
 
+// --- DOM Elements ---
+const els = {
+    homeView: document.getElementById('homeView'),
+    playerView: document.getElementById('playerView'),
+    videoGrid: document.getElementById('videoGrid'),
+    playerWrapper: document.getElementById('playerWrapper'),
+    playlistContainer: document.getElementById('playlistContainer'),
+    mainTitle: document.getElementById('mainTitle'),
+    viewCount: document.getElementById('viewCount'),
+    videoDate: document.getElementById('videoDate'),
+    progressBar: document.getElementById('progressBar'),
+    progressFilled: document.getElementById('progressFilled'),
+    progressHover: document.getElementById('progressHover'),
+    scrubHead: document.querySelector('.scrub-head'),
+    timeDisplay: document.getElementById('timeDisplay'),
+    playPauseBtn: document.getElementById('playPauseBtn'),
+    bigPlayBtn: document.getElementById('bigPlayBtn'),
+    volumeSlider: document.getElementById('volumeSlider'),
+    muteBtn: document.getElementById('muteBtn'),
+    starBtn: document.getElementById('starBtn'),
+    starCount: document.getElementById('starCount'),
+    starText: document.getElementById('starText'),
+    searchInput: document.getElementById('searchInput'),
+    searchResults: document.getElementById('searchResults')
+};
+
+let activeVideoEl = null;
+
+// --- Initialization ---
+function init() {
+    renderHomeGrid();
+    renderPlaylist();
+    setupGlobalEvents();
+    
+    // Check URL for video
+    const params = new URLSearchParams(window.location.search);
+    const vidId = params.get('v');
+    if (vidId) {
+        const idx = videos.findIndex(v => v.id === vidId);
+        if (idx !== -1) loadVideo(idx);
+    }
+}
+
+// --- Rendering ---
+function renderHomeGrid() {
+    els.videoGrid.innerHTML = videos.map((vid, index) => `
+        <div class="video-card" onmouseenter="previewPlay(this, ${index})" onmouseleave="previewStop(this)" onclick="loadVideo(${index})">
+            <div class="card-thumbnail">
+                <video class="thumb-media" src="${vid.src}#t=0.1" preload="metadata" muted playsinline></video>
+                <div class="duration">${vid.duration}</div>
+            </div>
+            <div class="card-info">
+                <img src="https://github.com/github.png" class="card-avatar">
+                <div class="card-text">
+                    <h3>${vid.title}</h3>
+                    <div class="card-meta">GitTube Academy • ${vid.views} • ${vid.date}</div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderPlaylist() {
+    els.playlistContainer.innerHTML = videos.map((vid, index) => `
+        <div class="playlist-item" id="pl-item-${index}" onclick="loadVideo(${index})">
+            <div class="pl-thumb">
+                <video class="pl-img" src="${vid.src}#t=1.0" preload="metadata"></video>
+            </div>
+            <div class="pl-info">
+                <h4>${vid.title}</h4>
+                <span>${vid.views}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// --- Player Logic ---
+function loadVideo(index, pushHistory = true) {
+    // Teardown previous
+    if (activeVideoEl) {
+        activeVideoEl.pause();
+        activeVideoEl.remove();
+    }
+
+    state.currentIndex = index;
+    const vidData = videos[index];
+
+    // UI Updates
+    els.homeView.classList.add('hidden');
+    els.playerView.classList.remove('hidden');
+    els.mainTitle.innerText = vidData.title;
+    els.viewCount.innerText = `${vidData.views} subscribers`;
+    els.videoDate.innerText = `Published ${vidData.date}`;
+    
+    // Highlight Playlist
+    document.querySelectorAll('.playlist-item').forEach(el => el.classList.remove('active'));
+    document.getElementById(`pl-item-${index}`)?.classList.add('active');
+
+    // Create Video Element
+    activeVideoEl = document.createElement('video');
+    activeVideoEl.className = 'video-element';
+    activeVideoEl.src = vidData.src;
+    activeVideoEl.volume = state.volume;
+    
+    // Events
+    activeVideoEl.addEventListener('timeupdate', updateProgress);
+    activeVideoEl.addEventListener('ended', () => { state.isPlaying = false; updatePlayIcons(); });
+    activeVideoEl.addEventListener('click', togglePlay);
+    activeVideoEl.addEventListener('loadedmetadata', () => {
+        updateTimeDisplay();
+        // Auto-play
+        togglePlay();
+    });
+
+    els.playerWrapper.prepend(activeVideoEl);
+    
+    if (pushHistory) {
+        history.pushState({ v: vidData.id }, '', `?v=${vidData.id}`);
+    }
+}
+
+function goHome() {
+    if (activeVideoEl) activeVideoEl.pause();
+    els.playerView.classList.add('hidden');
+    els.homeView.classList.remove('hidden');
+    state.currentIndex = -1;
+    history.pushState(null, '', window.location.pathname);
+}
+
+// --- Controls ---
 function togglePlay() {
-  const vid = getActiveVideo();
-  if(vid.paused) { vid.play(); updatePlayIcon(true); } 
-  else { vid.pause(); updatePlayIcon(false); }
+    if (!activeVideoEl) return;
+    if (activeVideoEl.paused) {
+        activeVideoEl.play();
+        state.isPlaying = true;
+    } else {
+        activeVideoEl.pause();
+        state.isPlaying = false;
+    }
+    updatePlayIcons();
 }
 
-function updatePlayIcon(isPlaying) {
-  const wrapper = document.getElementById('playerWrapper');
-  const path = playPauseBtn.querySelector('path');
-  if(isPlaying) {
-    wrapper.classList.remove('paused'); wrapper.classList.add('playing');
-    path.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); 
-  } else {
-    wrapper.classList.remove('playing'); wrapper.classList.add('paused');
-    path.setAttribute('d', 'M8 5v14l11-7z');
-  }
-}
-
-function skipVideo(seconds) {
-  const vid = getActiveVideo();
-  vid.currentTime += seconds;
-}
-
-function nextVideo() {
-  let next = currentIndex + 1;
-  if(next >= videos.length) next = 0;
-  switchToPlayer(next);
+function updatePlayIcons() {
+    const wrapper = els.playerWrapper;
+    const btnPath = els.playPauseBtn.querySelector('path');
+    
+    if (state.isPlaying) {
+        wrapper.classList.remove('paused');
+        wrapper.classList.add('playing');
+        btnPath.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); // Pause Icon
+    } else {
+        wrapper.classList.remove('playing');
+        wrapper.classList.add('paused');
+        btnPath.setAttribute('d', 'M8 5v14l11-7z'); // Play Icon
+    }
 }
 
 function updateProgress() {
-  const vid = getActiveVideo();
-  if (!vid.duration) return;
-  const percent = (vid.currentTime / vid.duration) * 100;
-  progressFilled.style.width = `${percent}%`;
-  timeDisplay.innerText = `${formatTime(vid.currentTime)} / ${formatTime(vid.duration)}`;
+    if (!activeVideoEl || state.isDragging) return;
+    const pct = (activeVideoEl.currentTime / activeVideoEl.duration) * 100;
+    els.progressFilled.style.width = `${pct}%`;
+    els.scrubHead.style.left = `${pct}%`;
+    updateTimeDisplay();
+}
+
+function updateTimeDisplay() {
+    if(!activeVideoEl) return;
+    const cur = formatTime(activeVideoEl.currentTime);
+    const dur = formatTime(activeVideoEl.duration || 0);
+    els.timeDisplay.innerText = `${cur} / ${dur}`;
 }
 
 function scrub(e) {
-  const vid = getActiveVideo();
-  const rect = progressBar.getBoundingClientRect();
-  const pos = (e.clientX - rect.left) / rect.width;
-  vid.currentTime = pos * vid.duration;
+    if (!activeVideoEl) return;
+    const rect = els.progressBar.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    const clamped = Math.max(0, Math.min(1, pos));
+    activeVideoEl.currentTime = clamped * activeVideoEl.duration;
+    els.progressFilled.style.width = `${clamped * 100}%`;
+    els.scrubHead.style.left = `${clamped * 100}%`;
 }
 
-function formatTime(seconds) {
-  const min = Math.floor(seconds / 60);
-  const sec = Math.floor(seconds % 60);
-  return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+// --- Utilities ---
+function formatTime(s) {
+    const min = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+}
+
+function previewPlay(card, index) {
+    // Only preview if not on mobile (simple check)
+    if(window.innerWidth > 900) {
+        const vid = card.querySelector('video');
+        vid.currentTime = 0;
+        vid.play().catch(e => {}); // Ignore auto-play errors
+    }
+}
+
+function previewStop(card) {
+    const vid = card.querySelector('video');
+    vid.pause();
+    vid.currentTime = 0;
+}
+
+// --- Event Listeners Setup ---
+function setupGlobalEvents() {
+    // Keyboard
+    document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT') return;
+        const key = e.key.toLowerCase();
+        if (key === ' ' && state.currentIndex !== -1) { e.preventDefault(); togglePlay(); }
+        if (key === 'f') toggleFullscreen();
+        if (key === 'm') toggleMute();
+        if (key === '/') { e.preventDefault(); els.searchInput.focus(); }
+    });
+
+    // Progress Bar Interaction
+    els.progressBar.addEventListener('mousedown', (e) => {
+        state.isDragging = true;
+        scrub(e);
+    });
+    document.addEventListener('mousemove', (e) => {
+        if (state.isDragging) scrub(e);
+        // Hover effect for progress bar
+        if (e.target.closest('.progress-area')) {
+            const rect = els.progressBar.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            els.progressHover.style.width = `${pos * 100}%`;
+        }
+    });
+    document.addEventListener('mouseup', () => { state.isDragging = false; });
+
+    // Buttons
+    els.playPauseBtn.onclick = togglePlay;
+    els.bigPlayBtn.onclick = togglePlay;
+    
+    // Volume
+    els.volumeSlider.addEventListener('input', (e) => {
+        state.volume = e.target.value;
+        if(activeVideoEl) activeVideoEl.volume = state.volume;
+    });
+    els.muteBtn.onclick = toggleMute;
+    
+    // Search
+    els.searchInput.addEventListener('input', handleSearch);
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-wrapper')) els.searchResults.style.display = 'none';
+    });
+
+    // History Back
+    window.onpopstate = (e) => {
+        if (e.state && e.state.v) {
+            const idx = videos.findIndex(v => v.id === e.state.v);
+            if(idx !== -1) loadVideo(idx, false);
+        } else {
+            goHome();
+        }
+    };
 }
 
 function toggleFullscreen() {
-  if (!document.fullscreenElement) playerWrapper.requestFullscreen();
-  else document.exitFullscreen();
+    if (!document.fullscreenElement) {
+        els.playerWrapper.requestFullscreen().catch(err => {});
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function toggleMute() {
+    if (!activeVideoEl) return;
+    activeVideoEl.muted = !activeVideoEl.muted;
+    // Update icon logic here (simplified)
+    const path = els.muteBtn.querySelector('path');
+    if(activeVideoEl.muted) path.setAttribute('d', 'M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z');
+    else path.setAttribute('d', 'M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z');
 }
 
 function toggleStar() {
-  isStarred = !isStarred;
-  const countEl = document.getElementById('starCount');
-  let count = parseInt(countEl.innerText.replace(',',''));
-  if(isStarred) {
-    starBtn.classList.add('starred'); starText.innerText = "Starred"; count++;
-  } else {
-    starBtn.classList.remove('starred'); starText.innerText = "Star"; count--;
-  }
-  countEl.innerText = count.toLocaleString();
+    state.isStarred = !state.isStarred;
+    let count = parseInt(els.starCount.innerText.replace(',', ''));
+    if (state.isStarred) {
+        els.starBtn.classList.add('active');
+        els.starText.innerText = "Starred";
+        count++;
+    } else {
+        els.starBtn.classList.remove('active');
+        els.starText.innerText = "Star";
+        count--;
+    }
+    els.starCount.innerText = count.toLocaleString();
 }
 
 function shareVideo() {
-    const videoId = videos[currentIndex].id;
-    const url = `${window.location.origin}${window.location.pathname}?v=${videoId}`;
-    navigator.clipboard.writeText(url).then(() => {
-        const originalText = shareText.innerText;
-        shareText.innerText = "Copied!";
-        setTimeout(() => { shareText.innerText = originalText; }, 2000);
-    });
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    const shareSpan = document.getElementById('shareText');
+    const original = shareSpan.innerText;
+    shareSpan.innerText = "Copied!";
+    setTimeout(() => shareSpan.innerText = original, 2000);
 }
 
 function handleSearch(e) {
-    const query = e.target.value.toLowerCase();
-    searchResults.innerHTML = '';
-    if (query.length === 0) { searchResults.style.display = 'none'; return; }
-    const matches = videos.filter(v => v.title.toLowerCase().includes(query));
-    if (matches.length > 0) {
-        searchResults.style.display = 'flex';
-        matches.forEach(vid => {
+    const q = e.target.value.toLowerCase();
+    const res = els.searchResults;
+    res.innerHTML = '';
+    
+    if(!q) { res.style.display = 'none'; return; }
+    
+    const matches = videos.filter(v => v.title.toLowerCase().includes(q));
+    if(matches.length) {
+        res.style.display = 'flex';
+        matches.forEach(m => {
             const div = document.createElement('div');
-            div.className = 'search-result-item';
-            div.innerText = vid.title;
+            div.className = 'search-item';
+            div.innerText = m.title;
             div.onclick = () => {
-                const idx = videos.findIndex(v => v.id === vid.id);
-                switchToPlayer(idx);
-                searchInput.value = '';
-                searchResults.style.display = 'none';
+                const idx = videos.indexOf(m);
+                loadVideo(idx);
+                res.style.display = 'none';
+                els.searchInput.value = '';
             };
-            searchResults.appendChild(div);
+            res.appendChild(div);
         });
-    } else { searchResults.style.display = 'none'; }
+    } else {
+        res.style.display = 'none';
+    }
 }
 
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-container')) searchResults.style.display = 'none';
-});
-
-window.addEventListener('DOMContentLoaded', initSystem);
+// Start
+document.addEventListener('DOMContentLoaded', init);
